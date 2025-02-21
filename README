@@ -1,0 +1,139 @@
+1. **Setup MongoDB:**
+# Connect to mongoDB in cli  by typing "mongosh"
+mongosh
+
+
+2. **Database and Collection Creation:**
+# create library db
+use library;
+
+# create book collection
+db.createCollection("books");
+
+
+3. **Insert Data:**
+# insert records into the books collection
+db.books.insertMany([
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    publishedYear: 1960,
+    genre: "Fiction",
+    ISBN: "9780061120084"
+  },
+  {
+    title: "1984",
+    author: "George Orwell",
+    publishedYear: 1949,
+    genre: "Dystopian",
+    ISBN: "9780451524935"
+  },
+  {
+    title: "Pride and Prejudice",
+    author: "Jane Austen",
+    publishedYear: 1813,
+    genre: "Romance",
+    ISBN: "9780141439518"
+  },
+  {
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
+    publishedYear: 1937,
+    genre: "Fantasy",
+    ISBN: "9780547928227"
+  },
+  {
+    title: "The Catcher in the Rye",
+    author: "J.D. Salinger",
+    publishedYear: 1951,
+    genre: "Fiction",
+    ISBN: "9780316769488"
+  }
+]);
+
+
+4. **Retrieve Data:**
+// Retrieve all books
+db.books.find().pretty();
+
+// Query books by a specific author
+db.books.find({ author: "George Orwell" }).pretty();
+
+// Find books published after 2000
+db.books.find({ publishedYear: { $gt: 2000 } }).pretty();
+
+
+
+5. **Update Data:**
+// Update the publishedYear of a specific book
+db.books.updateOne(
+  { ISBN: "9780451524935" },
+  { $set: { publishedYear: 1950 } }
+);
+
+// Add a new field 'rating' to all books
+db.books.updateMany({}, { $set: { rating: 4.5 } });
+
+
+// 6. **Delete Data:**
+// Delete a book by its ISBN
+db.books.deleteOne({ ISBN: "9780316769488" });
+
+// Remove all books of a particular genre
+db.books.deleteMany({ genre: "Fiction" });
+
+
+
+// 7. **Data Modeling Exercise:**
+// Users Collection
+db.createCollection("users");
+
+db.users.insertOne({
+  name: "John Doe",
+  email: "john@example.com",
+  address: "123 Main St",
+  orders: []
+});
+
+// Products Collection
+db.createCollection("products");
+
+db.products.insertOne({
+  name: "Laptop",
+  price: 1200,
+  stock: 10,
+  category: "Electronics"
+});
+
+// Orders Collection
+db.createCollection("orders");
+db.orders.insertOne({
+  userId: ObjectId("67b8b302ceb0e3ab315e73a1"),
+  items: [{ productId: ObjectId("67b8b324ceb0e3ab315e73a2"), quantity: 1 }],
+  total: 1200,
+  status: "Pending"
+});
+
+
+8. **Aggregation Pipeline:**
+db.books.aggregate([
+  { $group: { _id: "$genre", totalBooks: { $sum: 1 } } }
+]);
+
+// Calculate the average published year
+db.books.aggregate([
+  { $group: { _id: null, avgPublishedYear: { $avg: "$publishedYear" } } }
+]);
+
+// Identify the top-rated book
+db.books.aggregate([
+  { $sort: { rating: -1 } },
+  { $limit: 1 }
+]);
+
+
+9. **Indexing:**
+// Create an index on the author field
+db.books.createIndex({ author: 1 });
+
+
